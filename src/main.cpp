@@ -89,7 +89,7 @@ int main() {
 	cam.set_aspect_ratio(16.f / 9.f);
 	glm::mat4 model_matrix = glm::mat4(1);
 
-	glm::vec3 light_pos = {13, 2, 4};
+	glm::vec3 light_pos = {13, 2, 8};
 
 	while(!glfwWindowShouldClose(window)) {
 		process_input(window, cam);
