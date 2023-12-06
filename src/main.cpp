@@ -56,12 +56,12 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	render_context ship = s_mesh_manager.load("spaceship.obj");
+	render_context ship = s_mesh_manager.load("../models/spaceship.obj");
 
-	GLuint default_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "default.vert");
-	GLuint default_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "default.frag");
-	GLuint contour_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "contour.vert");
-	GLuint contour_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "contour.frag");
+	GLuint default_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/default.vert");
+	GLuint default_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/default.frag");
+	GLuint contour_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/contour.vert");
+	GLuint contour_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/contour.frag");
 
 	GLuint default_program = s_shader_manager.create_program( {default_vert, default_frag} );
 	GLuint contour_program = s_shader_manager.create_program( {contour_vert, contour_frag} );

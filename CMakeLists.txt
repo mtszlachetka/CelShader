@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.27)
 project(CelShader)
 
-add_executable(CelShader main.cpp)
+add_executable(CelShader src/main.cpp)
 
-add_library(utils STATIC camera.cpp mesh_manager.cpp shader_manager.cpp)
+add_subdirectory(src)
 
 find_package(glfw3 REQUIRED)
 find_package(GLEW REQUIRED)

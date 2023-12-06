@@ -1,2 +1,0 @@
-/usr/bin/ar qc libutils.a CMakeFiles/utils.dir/camera.cpp.o CMakeFiles/utils.dir/mesh_manager.cpp.o CMakeFiles/utils.dir/shader_manager.cpp.o
-/usr/bin/ranlib libutils.a
