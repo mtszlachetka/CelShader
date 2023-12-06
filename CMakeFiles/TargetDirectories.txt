@@ -1,0 +1,4 @@
+/home/Mateusz/projects/CelShader/CMakeFiles/CelShader.dir
+/home/Mateusz/projects/CelShader/CMakeFiles/utils.dir
+/home/Mateusz/projects/CelShader/CMakeFiles/edit_cache.dir
+/home/Mateusz/projects/CelShader/CMakeFiles/rebuild_cache.dir
