@@ -7,6 +7,8 @@
 #include "mesh_manager.hpp"
 #include "camera.hpp"
 
+unsigned step = 0;
+
 void process_input(GLFWwindow* window, camera& cam) {
 	float angleSpeed = 0.1f;
 	float moveSpeed = 0.1f;
@@ -29,6 +31,9 @@ void process_input(GLFWwindow* window, camera& cam) {
 		cam.m_dir = glm::vec3(glm::eulerAngleY(angleSpeed) * glm::vec4(cam.m_dir, 0));
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		cam.m_dir = glm::vec3(glm::eulerAngleY(-angleSpeed) * glm::vec4(cam.m_dir, 0));
+	
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) step ++;
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && step > 0) step--;
 
 	// cam.m_dir = glm::normalize(glm::vec3(0.) - cam.m_pos);
 
@@ -91,16 +96,19 @@ int main() {
 		glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
 		glBindVertexArray(0);
 
-		glUseProgram(contour_program);
-		glCullFace(GL_FRONT);
-		glUniformMatrix4fv(glGetUniformLocation(contour_program, "model_matrix"), 1, GL_FALSE, (float*)&model_matrix);
-		glUniformMatrix4fv(glGetUniformLocation(contour_program, "camera_matrix"), 1, GL_FALSE, (float*)&camera_matrix);
-		glUniformMatrix4fv(glGetUniformLocation(contour_program, "perspective_matrix"), 1, GL_FALSE, (float*)&perspective_matrix);
-		glUniform3fv(glGetUniformLocation(contour_program, "camera_pos"), 1, (float*)&cam.m_pos);
+		if (step >= 1) {
+			glUseProgram(contour_program);
+			glCullFace(GL_FRONT);
+			glUniformMatrix4fv(glGetUniformLocation(contour_program, "model_matrix"), 1, GL_FALSE, (float*)&model_matrix);
+			glUniformMatrix4fv(glGetUniformLocation(contour_program, "camera_matrix"), 1, GL_FALSE, (float*)&camera_matrix);
+			glUniformMatrix4fv(glGetUniformLocation(contour_program, "perspective_matrix"), 1, GL_FALSE, (float*)&perspective_matrix);
+			glUniform3fv(glGetUniformLocation(contour_program, "camera_pos"), 1, (float*)&cam.m_pos);
 
-		glBindVertexArray(ship.vertex_array);
-		glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
-		glBindVertexArray(0);
+			glBindVertexArray(ship.vertex_array);
+			glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
+			glBindVertexArray(0);
+		}
+		
 		glUseProgram(0);
 
 		glfwSwapBuffers(window);
