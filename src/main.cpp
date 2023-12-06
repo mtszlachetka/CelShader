@@ -34,6 +34,7 @@ void process_input(GLFWwindow* window, camera& cam) {
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) step = 1;
 	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) step = 2;
 	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) step = 3;
+	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) step = 4;
 
 	cam.m_dir = glm::normalize(glm::vec3(0.) - cam.m_pos);
 
@@ -73,11 +74,14 @@ int main() {
 	GLuint toon_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/toon.frag");
 	GLuint xtoon_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/xtoon.vert");
 	GLuint xtoon_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/xtoon.frag");
+	GLuint stylized_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/stylized.vert");
+	GLuint stylized_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/stylized.frag");
 
 	GLuint default_program = s_shader_manager.create_program( {default_vert, default_frag} );
 	GLuint contour_program = s_shader_manager.create_program( {contour_vert, contour_frag} );
 	GLuint toon_program = s_shader_manager.create_program( {toon_vert, toon_frag} );
 	GLuint xtoon_program = s_shader_manager.create_program( {xtoon_vert, xtoon_frag} );
+	GLuint stylized_program = s_shader_manager.create_program( {stylized_vert, stylized_frag} );
 
 	texture_info specular_tex = s_texture_manager.load_texture("../textures/specular.png", "specular_tex");
 	
@@ -85,7 +89,7 @@ int main() {
 	cam.set_aspect_ratio(16.f / 9.f);
 	glm::mat4 model_matrix = glm::mat4(1);
 
-	glm::vec3 light_pos = {3, 2, 0};
+	glm::vec3 light_pos = {13, 2, 4};
 
 	while(!glfwWindowShouldClose(window)) {
 		process_input(window, cam);
@@ -107,6 +111,9 @@ int main() {
 				break;
 			case 3: 
 				active_program = xtoon_program;
+				break;
+			case 4:
+				active_program = stylized_program;
 				break;
 			default:
 				active_program = default_program;
