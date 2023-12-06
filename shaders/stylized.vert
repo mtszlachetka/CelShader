@@ -25,7 +25,8 @@ void main() {
 	vec3 light_dir = normalize(light_pos - world_pos);
 	vec3 view_dir = normalize(camera_pos - world_pos);
 
-	vec3 half_vec = normalize(light_dir + view_dir);
+	vec3 reflection = reflect(light_dir, normal);
+	vec3 half_vec = normalize(view_dir + light_dir);
 
 	light_dir_TS = TBN * light_dir;
 	half_vec_TS = TBN * half_vec;

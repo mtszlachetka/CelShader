@@ -125,6 +125,7 @@ int main() {
 		glUniformMatrix4fv(glGetUniformLocation(active_program, "camera_matrix"), 1, GL_FALSE, (float*)&camera_matrix);
 		glUniformMatrix4fv(glGetUniformLocation(active_program, "perspective_matrix"), 1, GL_FALSE, (float*)&perspective_matrix);
 		glUniform3fv(glGetUniformLocation(active_program, "light_pos"), 1, (float*)&light_pos);
+		glUniform3fv(glGetUniformLocation(active_program, "camera_pos"), 1, (float*)&cam.m_pos);
 		glUniform1i(glGetUniformLocation(active_program, specular_tex.uniform_name), 0);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, specular_tex.id);

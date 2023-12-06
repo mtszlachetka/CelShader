@@ -8,7 +8,6 @@ layout(location = 4) in vec3 vertex_bitangent;
 uniform mat4 camera_matrix;
 uniform mat4 model_matrix;
 uniform mat4 perspective_matrix;
-uniform vec3 camera_pos;
 uniform vec3 light_pos;
 
 out vec3 light_dir_TS;
