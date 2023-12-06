@@ -6,9 +6,9 @@
 #include "shader_manager.hpp"
 #include "mesh_manager.hpp"
 #include "camera.hpp"
+#include "texture_manager.hpp"
 
 unsigned step = 0;
-bool b_rotate = false;
 
 void process_input(GLFWwindow* window, camera& cam) {
 	float angleSpeed = 0.1f;
@@ -28,10 +28,6 @@ void process_input(GLFWwindow* window, camera& cam) {
 		cam.m_pos += cam.m_up * moveSpeed;
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 		cam.m_pos -= cam.m_up * moveSpeed;
-	// if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	// 	cam.m_dir = glm::vec3(glm::eulerAngleY(angleSpeed) * glm::vec4(cam.m_dir, 0));
-	// if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	// 	cam.m_dir = glm::vec3(glm::eulerAngleY(-angleSpeed) * glm::vec4(cam.m_dir, 0));
 	
 
 	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) step = 0;
@@ -52,7 +48,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(1000, 1000, "cel shading example", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1600, 900, "cel shading example", NULL, NULL);
 	if (window == NULL)
 	{
 		glfwTerminate();
@@ -63,7 +59,7 @@ int main() {
 	if (glewInit() != GLEW_OK) {
         return 1;
     }
-    glViewport(0, 0, 1000, 1000);
+    glViewport(0, 0, 1600, 900);
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
@@ -75,12 +71,18 @@ int main() {
 	GLuint contour_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/contour.frag");
 	GLuint toon_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/toon.vert");
 	GLuint toon_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/toon.frag");
+	GLuint xtoon_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/xtoon.vert");
+	GLuint xtoon_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/xtoon.frag");
 
 	GLuint default_program = s_shader_manager.create_program( {default_vert, default_frag} );
 	GLuint contour_program = s_shader_manager.create_program( {contour_vert, contour_frag} );
 	GLuint toon_program = s_shader_manager.create_program( {toon_vert, toon_frag} );
+	GLuint xtoon_program = s_shader_manager.create_program( {xtoon_vert, xtoon_frag} );
+
+	texture_info specular_tex = s_texture_manager.load_texture("../textures/specular.png", "specular_tex");
 	
 	camera cam(0.01, 100.f, {0.165627, -0.356907, -0.91934}, {-1.60338, 3.45511, 8.89985});
+	cam.set_aspect_ratio(16.f / 9.f);
 	glm::mat4 model_matrix = glm::mat4(1);
 
 	glm::vec3 light_pos = {3, 2, 0};
@@ -94,29 +96,36 @@ int main() {
 		glm::mat4 camera_matrix = cam.get_camera_matrix();
 		glm::mat4 perspective_matrix = cam.get_perspective_matrix();
 
-		if (step <= 1) {
-			glCullFace(GL_BACK);
-			glUseProgram(default_program);
-			glUniformMatrix4fv(glGetUniformLocation(default_program, "model_matrix"), 1, GL_FALSE, (float*)&model_matrix);
-			glUniformMatrix4fv(glGetUniformLocation(default_program, "camera_matrix"), 1, GL_FALSE, (float*)&camera_matrix);
-			glUniformMatrix4fv(glGetUniformLocation(default_program, "perspective_matrix"), 1, GL_FALSE, (float*)&perspective_matrix);
-
-			glBindVertexArray(ship.vertex_array);
-			glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
-			glBindVertexArray(0);
+		GLuint active_program;
+		switch (step) {
+			case 0:
+			case 1:
+				active_program = default_program;
+				break;
+			case 2: 
+				active_program = toon_program;
+				break;
+			case 3: 
+				active_program = xtoon_program;
+				break;
+			default:
+				active_program = default_program;
 		}
-		if (step == 2) {
-			glCullFace(GL_BACK);
-			glUseProgram(toon_program);
-			glUniformMatrix4fv(glGetUniformLocation(toon_program, "model_matrix"), 1, GL_FALSE, (float*)&model_matrix);
-			glUniformMatrix4fv(glGetUniformLocation(toon_program, "camera_matrix"), 1, GL_FALSE, (float*)&camera_matrix);
-			glUniformMatrix4fv(glGetUniformLocation(toon_program, "perspective_matrix"), 1, GL_FALSE, (float*)&perspective_matrix);
-			glUniform3fv(glGetUniformLocation(toon_program, "light_pos"), 1, (float*)&light_pos);
 
-			glBindVertexArray(ship.vertex_array);
-			glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
-			glBindVertexArray(0);
-		}
+		glCullFace(GL_BACK);
+		glUseProgram(active_program);
+		glUniformMatrix4fv(glGetUniformLocation(active_program, "model_matrix"), 1, GL_FALSE, (float*)&model_matrix);
+		glUniformMatrix4fv(glGetUniformLocation(active_program, "camera_matrix"), 1, GL_FALSE, (float*)&camera_matrix);
+		glUniformMatrix4fv(glGetUniformLocation(active_program, "perspective_matrix"), 1, GL_FALSE, (float*)&perspective_matrix);
+		glUniform3fv(glGetUniformLocation(active_program, "light_pos"), 1, (float*)&light_pos);
+		glUniform1i(glGetUniformLocation(active_program, specular_tex.uniform_name), 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, specular_tex.id);
+
+		glBindVertexArray(ship.vertex_array);
+		glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray(0);
+
 
 		if (step >= 1) {
 			glUseProgram(contour_program);
