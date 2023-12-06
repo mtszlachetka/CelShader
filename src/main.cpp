@@ -8,10 +8,11 @@
 #include "camera.hpp"
 
 unsigned step = 0;
+bool b_rotate = false;
 
 void process_input(GLFWwindow* window, camera& cam) {
 	float angleSpeed = 0.1f;
-	float moveSpeed = 0.1f;
+	float moveSpeed = 0.5f;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
@@ -27,20 +28,25 @@ void process_input(GLFWwindow* window, camera& cam) {
 		cam.m_pos += cam.m_up * moveSpeed;
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 		cam.m_pos -= cam.m_up * moveSpeed;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cam.m_dir = glm::vec3(glm::eulerAngleY(angleSpeed) * glm::vec4(cam.m_dir, 0));
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cam.m_dir = glm::vec3(glm::eulerAngleY(-angleSpeed) * glm::vec4(cam.m_dir, 0));
+	// if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	// 	cam.m_dir = glm::vec3(glm::eulerAngleY(angleSpeed) * glm::vec4(cam.m_dir, 0));
+	// if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	// 	cam.m_dir = glm::vec3(glm::eulerAngleY(-angleSpeed) * glm::vec4(cam.m_dir, 0));
 	
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) step ++;
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && step > 0) step--;
 
-	// cam.m_dir = glm::normalize(glm::vec3(0.) - cam.m_pos);
+	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) step = 0;
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) step = 1;
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) step = 2;
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) step = 3;
+
+	cam.m_dir = glm::normalize(glm::vec3(0.) - cam.m_pos);
 
 	cam.rebase();
+
 }
 
 int main() {
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -67,16 +73,19 @@ int main() {
 	GLuint default_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/default.frag");
 	GLuint contour_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/contour.vert");
 	GLuint contour_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/contour.frag");
+	GLuint toon_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/toon.vert");
+	GLuint toon_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/toon.frag");
 
 	GLuint default_program = s_shader_manager.create_program( {default_vert, default_frag} );
 	GLuint contour_program = s_shader_manager.create_program( {contour_vert, contour_frag} );
+	GLuint toon_program = s_shader_manager.create_program( {toon_vert, toon_frag} );
 	
-	camera cam(0.01, 100.f, {0, 0, 1}, {0, 0, -20});
-	glm::mat4 model_matrix = glm::eulerAngleXYZ(glm::radians(30.f), glm::radians(45.f), glm::radians(30.f));
-	model_matrix = glm::mat4(1);
+	camera cam(0.01, 100.f, {0.165627, -0.356907, -0.91934}, {-1.60338, 3.45511, 8.89985});
+	glm::mat4 model_matrix = glm::mat4(1);
+
+	glm::vec3 light_pos = {3, 2, 0};
 
 	while(!glfwWindowShouldClose(window)) {
-
 		process_input(window, cam);
 
 		glClearColor(0.5, 0.5, 0.5, 1);
@@ -85,16 +94,29 @@ int main() {
 		glm::mat4 camera_matrix = cam.get_camera_matrix();
 		glm::mat4 perspective_matrix = cam.get_perspective_matrix();
 
-		glCullFace(GL_BACK);
-		glUseProgram(default_program);
-		glUniformMatrix4fv(glGetUniformLocation(default_program, "model_matrix"), 1, GL_FALSE, (float*)&model_matrix);
-		glUniformMatrix4fv(glGetUniformLocation(default_program, "camera_matrix"), 1, GL_FALSE, (float*)&camera_matrix);
-		glUniformMatrix4fv(glGetUniformLocation(default_program, "perspective_matrix"), 1, GL_FALSE, (float*)&perspective_matrix);
-		glUniform3fv(glGetUniformLocation(default_program, "camera_pos"), 1, (float*)&cam.m_pos);
+		if (step <= 1) {
+			glCullFace(GL_BACK);
+			glUseProgram(default_program);
+			glUniformMatrix4fv(glGetUniformLocation(default_program, "model_matrix"), 1, GL_FALSE, (float*)&model_matrix);
+			glUniformMatrix4fv(glGetUniformLocation(default_program, "camera_matrix"), 1, GL_FALSE, (float*)&camera_matrix);
+			glUniformMatrix4fv(glGetUniformLocation(default_program, "perspective_matrix"), 1, GL_FALSE, (float*)&perspective_matrix);
 
-		glBindVertexArray(ship.vertex_array);
-		glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
-		glBindVertexArray(0);
+			glBindVertexArray(ship.vertex_array);
+			glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
+			glBindVertexArray(0);
+		}
+		if (step == 2) {
+			glCullFace(GL_BACK);
+			glUseProgram(toon_program);
+			glUniformMatrix4fv(glGetUniformLocation(toon_program, "model_matrix"), 1, GL_FALSE, (float*)&model_matrix);
+			glUniformMatrix4fv(glGetUniformLocation(toon_program, "camera_matrix"), 1, GL_FALSE, (float*)&camera_matrix);
+			glUniformMatrix4fv(glGetUniformLocation(toon_program, "perspective_matrix"), 1, GL_FALSE, (float*)&perspective_matrix);
+			glUniform3fv(glGetUniformLocation(toon_program, "light_pos"), 1, (float*)&light_pos);
+
+			glBindVertexArray(ship.vertex_array);
+			glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
+			glBindVertexArray(0);
+		}
 
 		if (step >= 1) {
 			glUseProgram(contour_program);

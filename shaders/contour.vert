@@ -19,7 +19,7 @@ void main() {
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
-		vec3(vertex_normal * distance / 200), 1
+		vec3(vertex_normal * distance / 150), 1
 	);
 	gl_Position = perspective_matrix * camera_matrix * transform * model_matrix * vec4(vertex_position, 1.0);
 }
