@@ -8,10 +8,13 @@ void main() {
 	vec3 normal = vec3(0, 0, 1);
 	vec3 light_dir = normalize(light_dir_TS);
 	float prod = dot(normal, light_dir);
-	if (prod > 0.5) {
+	if (prod > 0.7) {
 		out_color = vec4(0.66, 0.66, 0.66, 1);
+	}
+	else if (prod > 0.5) {
+		out_color = vec4(0.44, 0.44, 0.44, 1);
 	} else if (prod > 0) {
-		out_color = vec4(0.33, 0.33, 0.33, 1);
+		out_color = vec4(0.22, 0.22, 0.22, 1);
 	} else {
 		out_color = vec4(0);
 	}
