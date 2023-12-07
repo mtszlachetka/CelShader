@@ -8,7 +8,7 @@
 #include "camera.hpp"
 #include "texture_manager.hpp"
 
-unsigned step = 0;
+unsigned step = 1;
 
 void process_input(GLFWwindow* window, camera& cam) {
 	float angleSpeed = 0.1f;
@@ -30,11 +30,11 @@ void process_input(GLFWwindow* window, camera& cam) {
 		cam.m_pos -= cam.m_up * moveSpeed;
 	
 
-	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) step = 0;
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) step = 1;
 	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) step = 2;
 	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) step = 3;
 	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) step = 4;
+	if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) step = 5;
 
 	cam.m_dir = glm::normalize(glm::vec3(0.) - cam.m_pos);
 
@@ -102,18 +102,18 @@ int main() {
 
 		GLuint active_program;
 		switch (step) {
-			case 0:
 			case 1:
+			case 2:
 				active_program = default_program;
 				break;
-			case 2: 
-				active_program = toon_program;
-				break;
 			case 3: 
-				active_program = xtoon_program;
+				active_program = toon_program;
 				break;
 			case 4:
 				active_program = stylized_program;
+				break;
+			case 5: 
+				active_program = xtoon_program;
 				break;
 			default:
 				active_program = default_program;
@@ -135,7 +135,7 @@ int main() {
 		glBindVertexArray(0);
 
 
-		if (step >= 1) {
+		if (step >= 2) {
 			glUseProgram(contour_program);
 			glCullFace(GL_FRONT);
 			glUniformMatrix4fv(glGetUniformLocation(contour_program, "model_matrix"), 1, GL_FALSE, (float*)&model_matrix);
