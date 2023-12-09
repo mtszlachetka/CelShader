@@ -10,6 +10,9 @@
 
 unsigned step = 1;
 
+int WIDTH = 1920;
+int HEIGHT = 1080;
+
 void process_input(GLFWwindow* window, camera& cam) {
 	float angleSpeed = 0.1f;
 	float moveSpeed = 0.5f;
@@ -49,7 +52,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(1600, 900, "cel shading example", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "cel shading example", NULL, NULL);
 	if (window == NULL)
 	{
 		glfwTerminate();
@@ -60,7 +63,7 @@ int main() {
 	if (glewInit() != GLEW_OK) {
         return 1;
     }
-    glViewport(0, 0, 1600, 900);
+    glViewport(0, 0, WIDTH, HEIGHT);
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
@@ -86,7 +89,7 @@ int main() {
 	texture_info specular_tex = s_texture_manager.load_texture("../textures/specular.png", "specular_tex");
 	
 	camera cam(0.01, 100.f, {0.165627, -0.356907, -0.91934}, {-1.60338, 3.45511, 8.89985});
-	cam.set_aspect_ratio(16.f / 9.f);
+	cam.set_aspect_ratio(float(WIDTH) / HEIGHT);
 	glm::mat4 model_matrix = glm::mat4(1);
 
 	glm::vec3 light_pos = {13, 2, 8};
