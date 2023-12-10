@@ -1,14 +1,16 @@
 #version 430 core
 
 in vec3 light_dir_TS;
-in vec3 half_vec_TS;
+in vec3 view_dir_TS;
+in vec3 reflection_TS;
 
 out vec4 out_color;
 
 void main() {
 	vec3 normal = vec3(0, 0, 1);
-	vec3 half_vec = normalize(half_vec_TS);
-	if (dot(half_vec, normal) > 0.9) {
+	vec3 view_dir = normalize(view_dir_TS);
+	vec3 reflection = normalize(reflection_TS);
+	if (pow(dot(view_dir, reflection), 5) > 0.9) {
 		out_color = vec4(1);
 	} else {
 		vec3 light_dir = normalize(light_dir_TS);
