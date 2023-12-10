@@ -12,8 +12,7 @@ uniform vec3 camera_pos;
 uniform vec3 light_pos;
 
 out vec3 light_dir_TS;
-out vec3 view_dir_TS;
-out vec3 reflection_TS;
+out vec3 half_vec_TS;
 
 void main() {
 	vec3 world_pos = (model_matrix * vec4(vertex_position, 1)).xyz;
@@ -26,11 +25,9 @@ void main() {
 	vec3 light_dir = normalize(light_pos - world_pos);
 	vec3 view_dir = normalize(camera_pos - world_pos);
 
-	vec3 reflection = reflect(-light_dir, normal);
+	vec3 half_vec = normalize(light_dir + view_dir);
 
 	light_dir_TS = TBN * light_dir;
-	view_dir_TS = TBN * view_dir;
-	reflection_TS = TBN * reflection;
-
+	half_vec_TS = TBN * half_vec;
 	gl_Position = perspective_matrix * camera_matrix * model_matrix * vec4(vertex_position, 1);
 }
