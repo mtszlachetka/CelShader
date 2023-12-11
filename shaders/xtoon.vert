@@ -23,7 +23,7 @@ void main() {
 
 	float D = pow(dot(view_dir, reflection), 2);
 
-	tex_coord = vec2(dot(normal, light_dir), D);
+	tex_coord = vec2(dot(normal, light_dir), D) * vec2(1,-1);
 
 	gl_Position = perspective_matrix * camera_matrix * model_matrix * vec4(vertex_position, 1);
 }

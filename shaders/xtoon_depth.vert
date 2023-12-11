@@ -17,16 +17,16 @@ void main() {
 
 
 	vec3 light_dir = normalize(light_pos - world_pos);
-	vec3 view_dir = normalize(camera_pos - world_pos);
 
-	vec3 reflection = reflect(light_dir, normal);
+
+	float distance = length(world_pos - camera_pos);
 
 	float z_min = 0.005;
-	float z_max = 50;
+	float z_max = 200;
 
-	float D = 1 - (log(camera_pos.z/z_min)/log(z_max/z_min));
+	float D = 1 - (log(distance/z_min)/log(z_max/z_min));
 
-	tex_coord = vec2(dot(normal, light_dir), D);
+	tex_coord = vec2(dot(normal, light_dir), D) * vec2(1,-1);
 
 	gl_Position = perspective_matrix * camera_matrix * model_matrix * vec4(vertex_position, 1);
 }

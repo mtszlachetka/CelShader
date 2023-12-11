@@ -10,6 +10,5 @@ void main() {
 
 	vec4 tex_color = texture(specular_tex, tex_coord);
 
-	
-		out_color = tex_color;
+	out_color = tex_color;
 }

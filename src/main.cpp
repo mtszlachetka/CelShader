@@ -93,7 +93,7 @@ int main() {
 	texture_info specular_tex = s_texture_manager.load_texture("../textures/specular.png", "specular_tex");
 	texture_info depth_tex = s_texture_manager.load_texture("../textures/depth.png", "depth_tex");
 	
-	camera cam(0.01, 100.f, {0.165627, -0.356907, -0.91934}, {-1.60338, 3.45511, 8.89985});
+	camera cam(0.01, 200.f, {0.165627, -0.356907, -0.91934}, {-1.60338, 3.45511, 8.89985});
 	cam.set_aspect_ratio(float(WIDTH) / HEIGHT);
 	glm::mat4 model_matrix = glm::mat4(1);
 
@@ -138,9 +138,10 @@ int main() {
 		glUniform3fv(glGetUniformLocation(active_program, "light_pos"), 1, (float*)&light_pos);
 		glUniform3fv(glGetUniformLocation(active_program, "camera_pos"), 1, (float*)&cam.m_pos);
 		glUniform1i(glGetUniformLocation(active_program, specular_tex.uniform_name), 0);
-		glUniform1i(glGetUniformLocation(active_program, depth_tex.uniform_name), 0);
+		glUniform1i(glGetUniformLocation(active_program, depth_tex.uniform_name), 1);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, specular_tex.id);
+		glActiveTexture(GL_TEXTURE0 + 1);
 		glBindTexture(GL_TEXTURE_2D, depth_tex.id);
 
 		glBindVertexArray(ship.vertex_array);
