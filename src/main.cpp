@@ -38,6 +38,7 @@ void process_input(GLFWwindow* window, camera& cam) {
 	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) step = 3;
 	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) step = 4;
 	if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) step = 5;
+	if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) step = 6;
 
 	cam.m_dir = glm::normalize(glm::vec3(0.) - cam.m_pos);
 
@@ -77,6 +78,8 @@ int main() {
 	GLuint toon_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/toon.frag");
 	GLuint xtoon_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/xtoon.vert");
 	GLuint xtoon_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/xtoon.frag");
+	GLuint xtoon_depth_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/xtoon_depth.vert");
+	GLuint xtoon_depth_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/xtoon_depth.frag");
 	GLuint stylized_vert = s_shader_manager.create_shader(GL_VERTEX_SHADER, "../shaders/stylized.vert");
 	GLuint stylized_frag = s_shader_manager.create_shader(GL_FRAGMENT_SHADER, "../shaders/stylized.frag");
 
@@ -84,9 +87,11 @@ int main() {
 	GLuint contour_program = s_shader_manager.create_program( {contour_vert, contour_frag} );
 	GLuint toon_program = s_shader_manager.create_program( {toon_vert, toon_frag} );
 	GLuint xtoon_program = s_shader_manager.create_program( {xtoon_vert, xtoon_frag} );
+	GLuint xtoon_depth_program = s_shader_manager.create_program( {xtoon_depth_vert, xtoon_depth_frag} );
 	GLuint stylized_program = s_shader_manager.create_program( {stylized_vert, stylized_frag} );
 
 	texture_info specular_tex = s_texture_manager.load_texture("../textures/specular.png", "specular_tex");
+	texture_info depth_tex = s_texture_manager.load_texture("../textures/depth.png", "depth_tex");
 	
 	camera cam(0.01, 100.f, {0.165627, -0.356907, -0.91934}, {-1.60338, 3.45511, 8.89985});
 	cam.set_aspect_ratio(float(WIDTH) / HEIGHT);
@@ -118,6 +123,9 @@ int main() {
 			case 5: 
 				active_program = xtoon_program;
 				break;
+			case 6: 
+				active_program = xtoon_depth_program;
+				break;
 			default:
 				active_program = default_program;
 		}
@@ -130,8 +138,10 @@ int main() {
 		glUniform3fv(glGetUniformLocation(active_program, "light_pos"), 1, (float*)&light_pos);
 		glUniform3fv(glGetUniformLocation(active_program, "camera_pos"), 1, (float*)&cam.m_pos);
 		glUniform1i(glGetUniformLocation(active_program, specular_tex.uniform_name), 0);
+		glUniform1i(glGetUniformLocation(active_program, depth_tex.uniform_name), 0);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, specular_tex.id);
+		glBindTexture(GL_TEXTURE_2D, depth_tex.id);
 
 		glBindVertexArray(ship.vertex_array);
 		glDrawElements(GL_TRIANGLES, ship.size, GL_UNSIGNED_INT, nullptr);
